@@ -16,17 +16,11 @@ This program starts/stops Spotify when the user enters/exits the main menu of Fo
 
 ## Installation
 1. [Register a Spotify application](https://beta.developer.spotify.com/documentation/general/guides/app-settings/#register-your-app)
-2. Run `python3 -m venv venv` (replace `python3` with however you call your python3.6 executable)
-3. Activate the venv
-    - Windows PowerShell: `./venv/Scripts/Activate.ps1`
-4. Run `pip install -r requirements.txt`
-5. Run `python fortnite_spotify.py`. You will be asked to enter your app's credentials.
-5. Deactivate the venv: `deactivate`
+2. Run `setup.bat`
+3. Run `fortnite_spotify.bat`. You will be asked to enter your app's credentials.
 
 ## Running
-1. Activate the venv
-    - Windows PowerShell: `./venv/Scripts/Activate.ps1`
-2. Run `python fortnite_spotify.py`
+2. Run `fortnite_spotify.bat`
 3. Enjoy. When you are in the Fortnite Main menu you will hear Spotify start playing. It will stop when you leave the main menu. 
 4. Report any problems in an issue to this repository
 
