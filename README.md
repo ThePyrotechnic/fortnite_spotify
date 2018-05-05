@@ -7,6 +7,13 @@ This program starts/stops Spotify when the user enters/exits the main menu of Fo
 3. `Python 3.6.5+` (Untested on lower versions)
 4. `Windows` (Linux pending) 
 
+## Limitations
+ - Screen resolution must be `1920x1080`
+   - Currently, the script reads a handful of pixels to determine the state.
+   - This is temporary and a more robust method will be developed in the future.
+ - Windows only
+   - After the development of the non-screen-dependent method, Mac support will be tested.
+
 ## Installation
 1. [Register a Spotify application](https://beta.developer.spotify.com/documentation/general/guides/app-settings/#register-your-app)
 2. Run `python3 -m venv venv` (replace `python3` with however you call your python3.6 executable)
