@@ -20,9 +20,9 @@ This program starts/stops Spotify when the user enters/exits the main menu of Fo
 3. Run `fortnite_spotify.bat`. You will be asked to enter your app's credentials.
 
 ## Running
-2. Run `fortnite_spotify.bat`
-3. Enjoy. When you are in the Fortnite Main menu you will hear Spotify start playing. It will stop when you leave the main menu. 
-4. Report any problems in an issue to this repository
+1. Run `fortnite_spotify.bat`
+2. Enjoy. When you are in the Fortnite Main menu you will hear Spotify start playing. It will stop when you leave the main menu. 
+3. Report any problems in an issue to this repository
 
 ## Troubleshooting
 
