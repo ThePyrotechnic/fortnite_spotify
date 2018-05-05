@@ -1,0 +1,6 @@
+spotify_secret.key
+refresh.token
+fortnite_spotify.log
+venv/*
+.idea/*
+test_screenshots/*
