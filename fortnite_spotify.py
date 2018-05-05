@@ -2,9 +2,10 @@ import time
 import logging
 import argparse
 import signal
+import os
 
-import fortnite_lib as fl
-import spotify_lib as sl
+import lib.fortnite_lib as fl
+import lib.spotify_lib as sl
 
 
 def handle_sigint(sig, frame):
@@ -16,9 +17,29 @@ def handle_sigint(sig, frame):
 def main():
     signal.signal(signal.SIGINT, handle_sigint)
 
-    cl = sl.SpotifyClient()
-    cl.authenticate()
+    try:
+        with open('spotify_secret.key', 'r') as secret_file:
+            client_id = secret_file.readline().rstrip()
+            client_secret = secret_file.readline().rstrip()
+            logging.info('Successfully loaded client information')
+    except (OSError, IOError, FileNotFoundError) as e:
+        logging.info('Could not access "spotify_secret.key".')
+        logging.debug(e)
 
+        client_id = input('Enter your Spotify application\'s Client ID: ')
+        client_secret = input('Enter your Spotify application\'s Client Secret: ')
+        try:
+            with open('spotify_secret.key', 'w') as secret_file:
+                print(client_id, file=secret_file)
+                print(client_secret, file=secret_file)
+            logging.info('Successfully saved client information')
+        except (OSError, IOError) as e:
+            logging.error('Unable to write to "spotify_secret.key" file. Client info will not persist')
+            logging.debug(e)
+
+    cl = sl.SpotifyClient(client_id, client_secret)
+    cl.authenticate()
+    print('Running. Press Ctrl+C to quit.')
     last_state = fl.in_menu()
     while True:
         cur_state = fl.in_menu()

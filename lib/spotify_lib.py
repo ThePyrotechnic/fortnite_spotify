@@ -16,20 +16,13 @@ class NotAuthenticatedError(Exception):
 
 
 class SpotifyClient:
-    def __init__(self):
+    def __init__(self, client_id: str, client_secret: str):
         self.authenticated: bool = False
         self.access_token: str = None
         self.refresh_token: str = None
         self.scopes = ['user-modify-playback-state']
-
-        try:
-            with open('spotify_secret.key', 'r') as secret_file:
-                self.client_id = secret_file.readline().rstrip()
-                self.client_secret = secret_file.readline().rstrip()
-        except (OSError, FileNotFoundError) as e:
-            logging.CRITICAL('Could not access "spotify_secret.key". Exiting')
-            logging.DEBUG(e)
-            exit(1)
+        self.client_id = client_id
+        self.client_secret = client_secret
 
     def play(self):
         if self.authenticated:
@@ -102,7 +95,7 @@ class SpotifyClient:
 
             self.refresh_token = refresh_token
             self.refresh()
-        except (OSError, FileNotFoundError, InvalidTokenError) as e:
+        except (OSError, IOError, FileNotFoundError, InvalidTokenError) as e:
             logging.warning('Unable to authenticate with "refresh.token" file')
             logging.debug(e)
 
@@ -158,7 +151,7 @@ class SpotifyClient:
             try:
                 with open('refresh.token', 'w') as token_file:
                     print(self.refresh_token, file=token_file)
-            except OSError as e:
+            except (OSError, IOError) as e:
                 logging.warning('Unable to write to file "refresh.token". Refresh token will not persist')
                 logging.debug(e)
 
