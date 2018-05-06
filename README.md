@@ -8,6 +8,8 @@ This program starts/stops Spotify when the user enters/exits the main menu of Fo
 4. `Windows` (Linux pending) 
 
 ## Limitations
+ - Brightess must be set to .50 in-game
+   - Until non-screen-dependent method is developed, a configurator will be used to calibrate the script to the user's display
  - Screen resolution must be `1920x1080`
    - Currently, the script reads a handful of pixels to determine the state.
    - This is temporary and a more robust method will be developed in the future.
