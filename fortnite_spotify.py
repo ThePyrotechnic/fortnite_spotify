@@ -3,11 +3,17 @@ import logging
 import argparse
 import signal
 import sys
-from typing import Callable, Iterable
+import json
+from typing import Callable
 
 import lib.fortnite_lib as fl
 from lib.fortnite_lib import GameState
 import lib.spotify_lib as sl
+
+
+CONFIG: dict = {}
+
+CFG_MAP: dict = {}
 
 
 def handle_sigint(sig, frame):
@@ -29,25 +35,18 @@ def try_spotify_function(func: Callable, handled_errors: list, func_args=None):
             logging.debug(e)
 
 
-def handle_in_menu(cl: sl.SpotifyClient):
-    try_spotify_function(cl.set_volume, ['Unable to set volume'], func_args=(100,))
-    try_spotify_function(cl.play, handled_errors=['Unable to play'])
+def handle_event(event_name: str):
+    global CFG_MAP
 
+    for action in CONFIG[event_name]['actions']:
+        try:
+            action_name, *action_args = action
+            func = CFG_MAP[action_name]['func']
+            handled_errors = CFG_MAP[action_name]['handled_errors']
 
-def handle_waiting(cl: sl.SpotifyClient):
-    pass
-
-
-def handle_launching(cl: sl.SpotifyClient):
-    try_spotify_function(cl.set_volume, ['Unable to set volume'], func_args=(50,))
-
-
-def handle_can_parachute(cl: sl.SpotifyClient):
-    pass
-
-
-def handle_storm_waiting(cl: sl.SpotifyClient):
-    try_spotify_function(cl.pause, handled_errors=['Unable to pause'])
+            try_spotify_function(func, handled_errors=handled_errors, func_args=action_args)
+        except ValueError:  # A null event was passed (bad config)
+            pass
 
 
 def setup() -> sl.SpotifyClient:
@@ -78,16 +77,53 @@ def setup() -> sl.SpotifyClient:
     return cl
 
 
+def load_config():
+    global CONFIG
+
+    try:
+        with open('fortnite_spotify.cfg', 'r') as cfg_file:
+            CONFIG = json.load(cfg_file)
+            CONFIG['unknown'] = {'actions': []}
+            logging.info('Successfully loaded "fortnite_spotify.cfg"')
+            return
+    except json.JSONDecodeError as e:
+        logging.info('"fortnite_spotify.cfg" is invalid.')
+        logging.debug(e)
+    except (OSError, IOError, FileNotFoundError) as e:
+        logging.info('Could not access "fortnite_spotify.cfg".')
+        logging.debug(e)
+
+    # Load reasonable defaults if the config file could not be loaded
+    CONFIG = {
+        'main_menu': {'actions': [["set_volume", 70], ["play"]]},
+        'waiting_for_players': {'actions': []},
+        'waiting_to_drop': {'actions': [["set_volume", 50]]},
+        'parachuting': {'actions': []},
+        'landed': {'actions': [["pause"]]},
+        'unknown': {'actions': []},
+    }
+
+
 def main():
+    global CFG_MAP
+
+    load_config()
+
     cl = setup()
 
+    CFG_MAP = {
+        'set_volume': {'func': cl.set_volume, 'handled_errors': ['Unable to set volume']},
+        'play': {'func': cl.play, 'handled_errors': ['Unable to play']},
+        'pause': {'func': cl.pause, 'handled_errors': ['Unable to pause']},
+    }
+
     state_map = {
-        GameState.UNKNOWN: lambda _: None,
-        GameState.IN_MENU: handle_in_menu,
-        GameState.WAITING: handle_waiting,
-        GameState.LAUNCHING: handle_launching,
-        GameState.CAN_PARACHUTE: handle_can_parachute,
-        GameState.STORM_WAITING: handle_storm_waiting,
+        GameState.UNKNOWN: 'unknown',
+        GameState.IN_MENU: 'main_menu',
+        GameState.WAITING: 'waiting_for_players',
+        GameState.LAUNCHING: 'waiting_to_drop',
+        GameState.CAN_PARACHUTE: 'parachuting',
+        GameState.STORM_WAITING: 'landed',
     }
 
     print('Running. Press Ctrl+C to quit.')
@@ -98,7 +134,7 @@ def main():
         if cur_state != last_state:
             last_state = cur_state
             logging.info(f'Fortnite: Changed state: {cur_state}')
-            state_map[cur_state](cl)
+            handle_event(state_map[cur_state])
         time.sleep(1)
     pass
 
