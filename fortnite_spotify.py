@@ -140,7 +140,7 @@ def main():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Automatically start/stop Spotify when in Fortnite\'s main menu')
+    parser = argparse.ArgumentParser(description='Automatically control Spotify when playing Fortnite')
     parser.add_argument('-d', '--debug_level', type=int, nargs='?', const=3, default=3, help='1: Debug, 2: Info, 3 (default): Warning, 4: Error, 5: Critical, 6: None')
     parser.add_argument('--debug_stderr', action='store_true', help='Send debug to stderr instead of log file')
     args = parser.parse_args()

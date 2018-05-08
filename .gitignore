@@ -5,3 +5,4 @@ fortnite_spotify.log
 venv/*
 .idea/*
 test_screenshots/*
+debug.bat
