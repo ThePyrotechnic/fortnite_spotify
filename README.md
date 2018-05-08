@@ -30,8 +30,9 @@ This program controls Spotify while playing Fortnite Battle Royale.
 3. Report any problems in an issue to this repository.
 
 ## Customization
-To configure the program, edit `fortnite_spotify.cfg`
- - The defaults are a good working example of what is currently possible
+To configure the program, edit `fortnite_spotify.cfg`.
+
+The defaults are a good working example of what is currently possible.
  
 **Possible actions:**
  - `["set_volume", int]` - Set the volume to the specified value. Must be between `0` and `100`, inclusive
